@@ -6,7 +6,7 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 
 
-public class InputData : MonoBehaviour
+public class ControllerInput : MonoBehaviour
 {
     [SerializeField] XRBaseController leftXRController;
     [SerializeField] XRBaseController rightXRController;
@@ -25,6 +25,12 @@ public class InputData : MonoBehaviour
     Vector3 oldLocalPosLeft = Vector3.zero;
     Vector3 oldLocalPosRight = Vector3.zero;
 
+    Vector3 LocalVelocityLeft;
+    Vector3 LocalVelocityRight;
+
+    bool leftWasGripped;
+    bool rightWasGripped;
+
     void Update()
     {
         if (!_rightController.isValid || !_leftController.isValid || !_HMD.isValid)
@@ -37,46 +43,81 @@ public class InputData : MonoBehaviour
         float TriggerValueLeft = _leftController.TryGetFeatureValue(CommonUsages.trigger, out float floatValue) ? floatValue : 0;
         float TriggerValueRight = _rightController.TryGetFeatureValue(CommonUsages.trigger, out floatValue) ? floatValue : 0;
 
-        //Vector3 LocalVelocityLeft = leftXRController.transform.position - oldLocalPosLeft;
-        //Vector3 LocalVelocityRight = rightXRController.transform.position - oldLocalPosLeft;
+        LocalVelocityLeft = (leftXRController.transform.localPosition - oldLocalPosLeft) * Time.deltaTime;
+        LocalVelocityRight = (rightXRController.transform.localPosition - oldLocalPosRight) * Time.deltaTime;
 
-        //oldLocalPosLeft = leftXRController.transform.position;
-        //oldLocalPosRight = rightXRController.transform.position;
+        oldLocalPosLeft = leftXRController.transform.localPosition;
+        oldLocalPosRight = rightXRController.transform.localPosition;
 
         PlaceholderAnim(GripLeft, GripRight, TriggerValueLeft, TriggerValueRight);
 
         if (GripLeft)
         {
-            Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
-            I_Interactable interactable = null;
-
-            foreach(Collider col in cols)
+            if(leftWasGripped == false)
             {
-                if(col.gameObject.TryGetComponent(out I_Interactable outInteractable))
-                {
-                    interactable = outInteractable;
-                    break;
-                }
+                _leftController.SendHapticImpulse(0, .05f, .05f);
             }
 
-            interactable?.OnInteracted(_leftController);
-        }
-        if (GripRight)
-        {
-            Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
-            I_Interactable interactable = null;
+            Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
+            WheelController WController = null;
 
             foreach (Collider col in cols)
             {
-                if (col.gameObject.TryGetComponent(out I_Interactable outInteractable))
+                if(col.gameObject.TryGetComponent(out WheelController outController))
                 {
-                    interactable = outInteractable;
+                    WController = outController;
                     break;
                 }
             }
 
-            interactable?.OnInteracted(_rightController);
+            if (WController != null)
+            {
+                WController.PushTheWheel(LocalVelocityLeft);
+
+                if(TriggerValueLeft > 0)
+                {
+                    WController.PushBrake(TriggerValueLeft * Time.deltaTime);
+                }
+            }
         }
+        if (GripRight)
+        {
+            if (rightWasGripped == false)
+            {
+                _rightController.SendHapticImpulse(0, .05f, .05f);
+            }
+
+            Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
+            WheelController WController = null;
+
+            foreach (Collider col in cols)
+            {
+                if (col.gameObject.TryGetComponent(out WheelController outController))
+                {
+                    WController = outController;
+                    break;
+                }
+            }
+
+            if(WController != null)
+            {
+                WController.PushTheWheel(LocalVelocityRight);
+
+                if (TriggerValueRight > 0)
+                {
+                    WController.PushBrake(TriggerValueRight * Time.deltaTime);
+                }
+            }
+        }
+
+        leftWasGripped = GripLeft;
+        rightWasGripped = GripRight;
+    }
+
+    public void GiveHapticFeedback(float amount, float duration)
+    {
+        _leftController.SendHapticImpulse(0, amount, duration);
+        _rightController.SendHapticImpulse(0, amount, duration);
     }
 
     void PlaceholderAnim(bool GripLeft, bool GripRight, float TriggerValueLeft, float TriggerValueRight)
@@ -125,5 +166,12 @@ public class InputData : MonoBehaviour
             rightRenderer = MR;
             rightRenderer.material.color = Color.yellow;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Vector3 pos = rightXRController.transform.position;
+        Gizmos.DrawLine(pos, pos + LocalVelocityRight * 1000000);
     }
 }
