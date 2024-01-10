@@ -19,7 +19,7 @@ public class WheelController : MonoBehaviour
 
         float dot = Vector3.Dot(velocity.normalized, forwardVector);
 
-        Debug.Log(power * dot);
+        //Debug.Log(power * dot);
 
         WCController.PushChair(power * dot, isRightWheel);
     }

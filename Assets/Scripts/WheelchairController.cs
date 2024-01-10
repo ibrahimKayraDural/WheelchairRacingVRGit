@@ -8,6 +8,13 @@ using TMPro;
 public class WheelchairController : MonoBehaviour
 {
     [SerializeField] Rigidbody _rb;
+    [SerializeField] TextMeshProUGUI SpeedDisplay;
+    [SerializeField] TextMeshProUGUI DebugScreen1;
+    [SerializeField] TextMeshProUGUI DebugScreen2;
+    [SerializeField] TextMeshProUGUI DebugScreen3;
+    [SerializeField] ControllerInput controllerInput;
+    [SerializeField] Transform RightWheelMesh;
+    [SerializeField] Transform LeftWheelMesh;
 
     [Header("EditorValueMultiplier will work in editor")]
     [SerializeField] float EditorValueMultiplier = 200f;
@@ -19,13 +26,9 @@ public class WheelchairController : MonoBehaviour
     [SerializeField] float MaxVelocity = 10f;
     [SerializeField] float TurnBrakePower = 0.001f;
     [SerializeField] [Range(0, 1)] float SpeedTurnRedPercent = .8f;
-    [SerializeField] AnimationCurve BrakeTurnCurve;
+    [SerializeField] float wheelMaxTurnSpeed = 1;
+    [SerializeField] AnimationCurve TorqueSpeedCurve;
     [SerializeField] AnimationCurve CollisionHapticCurve;
-    [SerializeField] TextMeshProUGUI SpeedDisplay;
-    [SerializeField] TextMeshProUGUI DebugScreen1;
-    [SerializeField] TextMeshProUGUI DebugScreen2;
-    [SerializeField] TextMeshProUGUI DebugScreen3;
-    [SerializeField] ControllerInput controllerInput;
 
     public Vector3 StartPos { get; private set; }
     public Quaternion StartRot { get; private set; }
@@ -51,6 +54,16 @@ public class WheelchairController : MonoBehaviour
 
         _rb.velocity = targetVelocity;
 
+        float wheelSpeedNormalized = targetVelocity.magnitude / MaxVelocity;
+
+        if (RightWheelMesh != null && LeftWheelMesh != null)
+        {
+            Vector3 targetRotation = Vector3.zero;
+            targetRotation.y = wheelSpeedNormalized * wheelMaxTurnSpeed * Time.deltaTime * -direction;
+
+            RightWheelMesh.Rotate(targetRotation);
+            LeftWheelMesh.Rotate(targetRotation);
+        }
 
         if (Input.GetKeyDown(KeyCode.A)) PushChair(100, false);
         if (Input.GetKeyDown(KeyCode.D)) PushChair(100, true);
@@ -62,7 +75,6 @@ public class WheelchairController : MonoBehaviour
             _rb.angularVelocity = Vector3.zero;
         }
 
-        //Debug.Log(_rb.angularVelocity);
         DisplaySpeed();
     }
 
@@ -89,14 +101,15 @@ public class WheelchairController : MonoBehaviour
         int direcitonInt = fromRight ? 1 : -1;
 
         Vector3 brakeVelocity = -direciton * powerFraction * BrakePower * EditorValueMultiplier;
-        float turnMultiplier = _rb.velocity.magnitude / MaxVelocity;
-        turnMultiplier = BrakeTurnCurve.Evaluate(turnMultiplier);
+
+        //float turnMultiplier = _rb.velocity.magnitude / MaxVelocity;
+        //turnMultiplier = TorqueSpeedCurve.Evaluate(turnMultiplier);
 
         if (_rb.velocity.magnitude >= brakeVelocity.magnitude)
         {
             _rb.velocity += brakeVelocity;
 
-            _rb.AddTorque(Vector3.up * direcitonInt * TurnPower * powerFraction * EditorValueMultiplier * turnMultiplier * TurnBrakePower);
+            _rb.AddTorque(Vector3.up * direcitonInt * TurnPower * powerFraction * EditorValueMultiplier * TurnBrakePower);
         }
         else
         {
@@ -112,7 +125,7 @@ public class WheelchairController : MonoBehaviour
     {
         float speed = collision.relativeVelocity.magnitude;
 
-        Debug(collision.gameObject.name + " " + speed);
+        CustomDebug(collision.gameObject.name + " " + speed);
 
         controllerInput.GiveHapticFeedback(CollisionHapticCurve.Evaluate(speed/MaxVelocity), .1f);
 
@@ -120,7 +133,7 @@ public class WheelchairController : MonoBehaviour
     }
 
     int debugIndex = 0;
-    void Debug(string msg)
+    void CustomDebug(string msg)
     {
         TextMeshProUGUI mesh = DebugScreen1;
 

@@ -31,6 +31,12 @@ public class ControllerInput : MonoBehaviour
     bool leftWasGripped;
     bool rightWasGripped;
 
+    bool rightTriggerWasHeld;
+    bool leftTriggerWasHeld;
+
+    GunController rightHoldsGun = null;
+    GunController leftHoldsGun = null;
+
     void Update()
     {
         if (!_rightController.isValid || !_leftController.isValid || !_HMD.isValid)
@@ -53,67 +59,112 @@ public class ControllerInput : MonoBehaviour
 
         if (GripLeft)
         {
-            Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
-            WheelController WController = null;
-
-            foreach (Collider col in cols)
+            if(leftHoldsGun == null)
             {
-                if(col.gameObject.TryGetComponent(out WheelController outController))
+                Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
+                WheelController WController = null;
+
+                foreach (Collider col in cols)
                 {
-                    WController = outController;
-                    break;
+                    if (col.gameObject.TryGetComponent(out WheelController outWheelController))
+                    {
+                        WController = outWheelController;
+                        break;
+                    }
+                    else if (col.gameObject.TryGetComponent(out GunController outGunController))
+                    {
+                        if (rightHoldsGun != null)
+                        {
+                            rightHoldsGun.GetUnheld(false);
+                            rightHoldsGun = null;
+                        }
+
+                        leftHoldsGun = outGunController;
+                        leftHoldsGun.GetHeld(leftModel);
+
+                        break;
+                    }
                 }
-            }
 
-            if (WController != null)
-            {
-                if (leftWasGripped == false)
+                if (WController != null)
                 {
-                    _leftController.SendHapticImpulse(0, .1f, .1f);
-                    leftWasGripped = true;
-                }
+                    if (leftWasGripped == false)
+                    {
+                        _leftController.SendHapticImpulse(0, .1f, .1f);
+                        leftWasGripped = true;
+                    }
 
-                WController.PushTheWheel(LocalVelocityLeft);
+                    WController.PushTheWheel(LocalVelocityLeft);
 
-                if(TriggerValueLeft > 0)
-                {
-                    WController.PushBrake(TriggerValueLeft * Time.deltaTime);
+                    if (TriggerValueLeft > 0)
+                    {
+                        WController.PushBrake(TriggerValueLeft * Time.deltaTime);
+                    }
                 }
             }
         }
+        else
+        {
+            if (leftHoldsGun != null) leftHoldsGun.GetUnheld();
+            leftHoldsGun = null;
+        }
+
         if (GripRight)
         {
-            Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
-            WheelController WController = null;
-
-            foreach (Collider col in cols)
+            if (rightHoldsGun == null)
             {
-                if (col.gameObject.TryGetComponent(out WheelController outController))
+
+                Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
+                WheelController WController = null;
+
+                foreach (Collider col in cols)
                 {
-                    WController = outController;
-                    break;
+                    if (col.gameObject.TryGetComponent(out WheelController outController))
+                    {
+                        WController = outController;
+                        break;
+                    }
+                    else if (col.gameObject.TryGetComponent(out GunController outGunController))
+                    {
+                        if (leftHoldsGun != null)
+                        {
+                            leftHoldsGun.GetUnheld(false);
+                            leftHoldsGun = null;
+                        }
+
+                        rightHoldsGun = outGunController;
+                        rightHoldsGun.GetHeld(rightModel);
+                        break;
+                    }
                 }
-            }
 
-            if(WController != null)
-            {
-                if (rightWasGripped == false)
+                if (WController != null)
                 {
-                    _rightController.SendHapticImpulse(0, .1f, .1f);
-                    rightWasGripped = true;
-                }
+                    if (rightWasGripped == false)
+                    {
+                        _rightController.SendHapticImpulse(0, .1f, .1f);
+                        rightWasGripped = true;
+                    }
 
-                WController.PushTheWheel(LocalVelocityRight);
+                    WController.PushTheWheel(LocalVelocityRight);
 
-                if (TriggerValueRight > 0)
-                {
-                    WController.PushBrake(TriggerValueRight * Time.deltaTime);
+                    if (TriggerValueRight > 0)
+                    {
+                        WController.PushBrake(TriggerValueRight * Time.deltaTime);
+                    }
                 }
             }
         }
+        else
+        {
+            if (rightHoldsGun != null) rightHoldsGun.GetUnheld();
+            rightHoldsGun = null;
+        }
 
-        if(GripLeft == false) leftWasGripped = false;
+        if (GripLeft == false) leftWasGripped = false;
         if (GripRight == false) rightWasGripped = false;
+        //if (TriggerValueLeft < .8f) leftTriggerWasHeld = false;
+        //if (TriggerValueRight < .8f) rightTriggerWasHeld = false;
     }
 
     public void GiveHapticFeedback(float amount, float duration)
