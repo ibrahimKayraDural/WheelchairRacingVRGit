@@ -53,11 +53,6 @@ public class ControllerInput : MonoBehaviour
 
         if (GripLeft)
         {
-            if(leftWasGripped == false)
-            {
-                _leftController.SendHapticImpulse(0, .05f, .05f);
-            }
-
             Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
             WheelController WController = null;
 
@@ -72,6 +67,12 @@ public class ControllerInput : MonoBehaviour
 
             if (WController != null)
             {
+                if (leftWasGripped == false)
+                {
+                    _leftController.SendHapticImpulse(0, .1f, .1f);
+                    leftWasGripped = true;
+                }
+
                 WController.PushTheWheel(LocalVelocityLeft);
 
                 if(TriggerValueLeft > 0)
@@ -82,11 +83,6 @@ public class ControllerInput : MonoBehaviour
         }
         if (GripRight)
         {
-            if (rightWasGripped == false)
-            {
-                _rightController.SendHapticImpulse(0, .05f, .05f);
-            }
-
             Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
             WheelController WController = null;
 
@@ -101,6 +97,12 @@ public class ControllerInput : MonoBehaviour
 
             if(WController != null)
             {
+                if (rightWasGripped == false)
+                {
+                    _rightController.SendHapticImpulse(0, .1f, .1f);
+                    rightWasGripped = true;
+                }
+
                 WController.PushTheWheel(LocalVelocityRight);
 
                 if (TriggerValueRight > 0)
@@ -110,8 +112,8 @@ public class ControllerInput : MonoBehaviour
             }
         }
 
-        leftWasGripped = GripLeft;
-        rightWasGripped = GripRight;
+        if(GripLeft == false) leftWasGripped = false;
+        if (GripRight == false) rightWasGripped = false;
     }
 
     public void GiveHapticFeedback(float amount, float duration)
