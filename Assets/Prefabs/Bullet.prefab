@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 360559390463667258}
   - component: {fileID: 7827498053784282846}
   - component: {fileID: 1002956748733955874}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86ef2673e83f0d744909c9b7916c82e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitTag: Shootable
+  Lifetime: 5
+  destroyEffect: {fileID: 0}
 --- !u!136 &7827498053784282846
 CapsuleCollider:
   m_ObjectHideFlags: 0

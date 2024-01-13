@@ -38,9 +38,9 @@ public class GunController : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
         GameObject instantiatedBullet = Instantiate(Projectile, Barrel.position, rotation);
 
-        if(TryGetComponent(out Projectile projectile))
+        if(instantiatedBullet.TryGetComponent(out Projectile projectile))
         {
-            projectile.Initialize(dir, speed);
+            projectile.Initialize(dir, speed, gameObject);
         }
         else
         {

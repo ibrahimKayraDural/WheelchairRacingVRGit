@@ -6,13 +6,15 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] string HitTag = "Shootable";
+    [SerializeField] float Lifetime = 5;
+    [SerializeField] DestroyVFX destroyEffect;
 
+    GameObject owner;
     Rigidbody rb;
     Collider coll;
     bool isInitialized;
 
-    public void Initialize(Vector3 direction, float speed)
+    public void Initialize(Vector3 direction, float speed, GameObject owner)
     {
         if (isInitialized) return;
 
@@ -23,20 +25,33 @@ public class Projectile : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.drag = 0;
         rb.angularDrag = 0;
-        rb.velocity = direction;
+        rb.velocity = direction * speed;
 
         coll.isTrigger = true;
+
+         this.owner = owner;
+
+        Invoke(nameof(DestroyProjectile), Lifetime);
 
         isInitialized = true;
     }
 
-    void OnTriggerEnter(Collider other)
+    public void DestroyProjectile()
     {
-        if (other.tag != HitTag) return;
-        if (TryGetComponent(out Shootable_Base shootable) == false) return;
-
-        shootable.OnShot();
+        if(destroyEffect != null)
+        {
+            Instantiate(destroyEffect, transform.position, Quaternion.identity);
+        }
 
         Destroy(gameObject);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (TryGetComponent(out Shootable_Base shootable)) shootable.OnShot();
+
+        if (other.gameObject == owner) return;
+
+        DestroyProjectile();
     }
 }
