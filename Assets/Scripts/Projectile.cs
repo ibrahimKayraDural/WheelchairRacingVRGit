@@ -48,7 +48,7 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (TryGetComponent(out Shootable_Base shootable)) shootable.OnShot();
+        if (other.gameObject.TryGetComponent(out Shootable_Base shootable)) shootable.OnShot();
 
         if (other.gameObject == owner) return;
 
