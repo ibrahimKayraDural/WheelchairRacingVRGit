@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Anchor
   - Shootable
+  - Hittable
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Interactable
   - Wheelchair
   - Projectile
-  - 
+  - Shootable
   - 
   - 
   - 

@@ -25,13 +25,16 @@ public class WheelchairController : MonoBehaviour
     [Header("^^^ Values That will be affected by Editor Value Multiplier ENDED ^^^")]
     [SerializeField] float MaxVelocity = 10f;
     [SerializeField] float TurnBrakePower = 0.001f;
-    [SerializeField] [Range(0, 1)] float SpeedTurnRedPercent = .8f;
+    [SerializeField] [Range(0, 1)] float HittableSpeedPercent = .8f;
     [SerializeField] float wheelMaxTurnSpeed = 1;
     [SerializeField] AnimationCurve TorqueSpeedCurve;
     [SerializeField] AnimationCurve CollisionHapticCurve;
 
     public Vector3 StartPos { get; private set; }
     public Quaternion StartRot { get; private set; }
+
+    float velocityNormalized => _rb.velocity.magnitude / MaxVelocity;
+    bool CanHitInteract => (int)_rb.velocity.magnitude > MaxVelocity * HittableSpeedPercent;
 
     void Start()
     {
@@ -54,12 +57,10 @@ public class WheelchairController : MonoBehaviour
 
         _rb.velocity = targetVelocity;
 
-        float wheelSpeedNormalized = targetVelocity.magnitude / MaxVelocity;
-
         if (RightWheelMesh != null && LeftWheelMesh != null)
         {
             Vector3 targetRotation = Vector3.zero;
-            targetRotation.y = wheelSpeedNormalized * wheelMaxTurnSpeed * Time.deltaTime * -direction;
+            targetRotation.y = velocityNormalized * wheelMaxTurnSpeed * Time.deltaTime * -direction;
 
             RightWheelMesh.Rotate(targetRotation);
             LeftWheelMesh.Rotate(targetRotation);
@@ -82,7 +83,7 @@ public class WheelchairController : MonoBehaviour
     {
         int speed = (int)_rb.velocity.magnitude;
         SpeedDisplay.text = speed.ToString();
-        Color color = speed > MaxVelocity * SpeedTurnRedPercent ? Color.red : Color.white;
+        Color color = CanHitInteract ? Color.red : Color.white;
         SpeedDisplay.color = color;
     }
 
@@ -125,11 +126,21 @@ public class WheelchairController : MonoBehaviour
     {
         float speed = collision.relativeVelocity.magnitude;
 
-        CustomDebug(collision.gameObject.name + " " + speed);
+        //CustomDebug(collision.gameObject.name + " " + speed);
 
         controllerInput.GiveHapticFeedback(CollisionHapticCurve.Evaluate(speed/MaxVelocity), .1f);
 
-        
+        if((int)speed > MaxVelocity * HittableSpeedPercent)
+        {
+            CustomDebug(collision.gameObject.name);
+
+            if (collision.gameObject.TryGetComponent(out Hittable_Base hittable))
+            {
+                CustomDebug("in");
+
+                hittable.OnHitted();
+            }
+        }
     }
 
     int debugIndex = 0;
