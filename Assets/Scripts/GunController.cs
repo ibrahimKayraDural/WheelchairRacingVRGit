@@ -4,23 +4,47 @@ using UnityEngine;
 
 public class GunController : MonoBehaviour
 {
+    [SerializeField] LineRenderer laserRenderer;
     [SerializeField] Transform GoBackTarget;
     [SerializeField] Transform Barrel;
-    [SerializeField] GameObject Projectile;
+    [SerializeField] LayerMask ShootLayers;
     [SerializeField] float shootCooldown = 0;
-    [SerializeField] float speed = 1;
+    [SerializeField] float rayLength = 100;
+    [SerializeField] float rayRadius = 1;
+
+    //[SerializeField] float speed = 1;
+    //[SerializeField] GameObject Projectile;
 
     Transform currentTarget;
-
     float nextShootTargetTime = -1;
+    bool isHeld;
 
     void Start()
     {
         currentTarget = GoBackTarget;
+        laserRenderer.startWidth = rayRadius * 2;
+        laserRenderer.endWidth = rayRadius * 2;
     }
+    void Update()
+    {
+        if (currentTarget != null)
+        {
+            transform.position = currentTarget.position;
+            transform.rotation = currentTarget.rotation;
+        }
+
+        if(isHeld)
+        {
+            laserRenderer.SetPosition(0, Barrel.position);
+            laserRenderer.SetPosition(1, Barrel.position + transform.forward * rayLength);
+        }
+    }
+
     public void GetHeld(Transform holder)
     {
         currentTarget = holder;
+        isHeld = true;
+        laserRenderer.enabled = true;
     }
     public void GetUnheld(bool ResetPosition = true)
     {
@@ -28,13 +52,30 @@ public class GunController : MonoBehaviour
         {
             currentTarget = GoBackTarget;
         }
+
+        isHeld = false;
+        laserRenderer.enabled = false;
     }
     public void Shoot()
     {
         if (nextShootTargetTime > Time.time) return;
-        if (Barrel == null || Projectile == null) return;
+        if (Barrel == null) return;
 
         Vector3 dir = transform.forward;
+
+        RaycastHit hitInfo;
+
+        //Ray ray = new Ray(Barrel.position, dir);
+        //Physics.Raycast(ray, out hitInfo, rayLength, ShootLayers)
+        if (Physics.SphereCast(Barrel.position, rayRadius, dir, out hitInfo, rayLength, ShootLayers))
+        {
+            if (hitInfo.collider.gameObject.TryGetComponent(out Shootable_Base shootable)) shootable.OnShot();
+            laserRenderer.SetPosition(1, hitInfo.transform.position);
+        }
+
+
+        StartCoroutine(LaserBlink());
+        /*
         Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
         GameObject instantiatedBullet = Instantiate(Projectile, Barrel.position, rotation);
 
@@ -46,16 +87,17 @@ public class GunController : MonoBehaviour
         {
             Destroy(instantiatedBullet);
         }
+        */
 
         nextShootTargetTime = Time.time + shootCooldown;
     }
 
-    void Update()
+    IEnumerator LaserBlink()
     {
-        if(currentTarget != null)
-        {
-            transform.position = currentTarget.position;
-            transform.rotation = currentTarget.rotation;
-        }
+        laserRenderer.enabled = false;
+
+        yield return new WaitForSeconds(.1f);
+
+        if (isHeld) laserRenderer.enabled = true;
     }
 }
