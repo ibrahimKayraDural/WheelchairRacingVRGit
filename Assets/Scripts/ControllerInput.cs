@@ -11,6 +11,7 @@ public class ControllerInput : MonoBehaviour
     [SerializeField] XRBaseController leftXRController;
     [SerializeField] XRBaseController rightXRController;
     [SerializeField] LayerMask InteractableLayer;
+    [SerializeField] float triggerHoldTreshold = .8f;
 
     public InputDevice _rightController;
     public InputDevice _leftController;
@@ -34,8 +35,8 @@ public class ControllerInput : MonoBehaviour
     bool rightTriggerWasHeld;
     bool leftTriggerWasHeld;
 
-    GunController rightHoldsGun = null;
-    GunController leftHoldsGun = null;
+    GunController rightHeldGun = null;
+    GunController leftHeldGun = null;
 
     void Update()
     {
@@ -59,7 +60,7 @@ public class ControllerInput : MonoBehaviour
 
         if (GripLeft)
         {
-            if(leftHoldsGun == null)
+            if(leftHeldGun == null)
             {
                 Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
                 WheelController WController = null;
@@ -73,14 +74,14 @@ public class ControllerInput : MonoBehaviour
                     }
                     else if (col.gameObject.TryGetComponent(out GunController outGunController))
                     {
-                        if (rightHoldsGun != null)
+                        if (rightHeldGun != null)
                         {
-                            rightHoldsGun.GetUnheld(false);
-                            rightHoldsGun = null;
+                            rightHeldGun.GetUnheld(false);
+                            rightHeldGun = null;
                         }
 
-                        leftHoldsGun = outGunController;
-                        leftHoldsGun.GetHeld(leftModel);
+                        leftHeldGun = outGunController;
+                        leftHeldGun.GetHeld(leftModel);
 
                         break;
                     }
@@ -102,16 +103,20 @@ public class ControllerInput : MonoBehaviour
                     }
                 }
             }
+            else if(TriggerValueLeft > triggerHoldTreshold && leftTriggerWasHeld == false)
+            {
+                leftHeldGun.Shoot();
+            }
         }
         else
         {
-            if (leftHoldsGun != null) leftHoldsGun.GetUnheld();
-            leftHoldsGun = null;
+            if (leftHeldGun != null) leftHeldGun.GetUnheld();
+            leftHeldGun = null;
         }
 
         if (GripRight)
         {
-            if (rightHoldsGun == null)
+            if (rightHeldGun == null)
             {
 
                 Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
@@ -126,14 +131,14 @@ public class ControllerInput : MonoBehaviour
                     }
                     else if (col.gameObject.TryGetComponent(out GunController outGunController))
                     {
-                        if (leftHoldsGun != null)
+                        if (leftHeldGun != null)
                         {
-                            leftHoldsGun.GetUnheld(false);
-                            leftHoldsGun = null;
+                            leftHeldGun.GetUnheld(false);
+                            leftHeldGun = null;
                         }
 
-                        rightHoldsGun = outGunController;
-                        rightHoldsGun.GetHeld(rightModel);
+                        rightHeldGun = outGunController;
+                        rightHeldGun.GetHeld(rightModel);
                         break;
                     }
                 }
@@ -154,17 +159,21 @@ public class ControllerInput : MonoBehaviour
                     }
                 }
             }
+            else if (TriggerValueRight > triggerHoldTreshold && rightTriggerWasHeld == false)
+            {
+                rightHeldGun.Shoot();
+            }
         }
         else
         {
-            if (rightHoldsGun != null) rightHoldsGun.GetUnheld();
-            rightHoldsGun = null;
+            if (rightHeldGun != null) rightHeldGun.GetUnheld();
+            rightHeldGun = null;
         }
 
         if (GripLeft == false) leftWasGripped = false;
         if (GripRight == false) rightWasGripped = false;
-        //if (TriggerValueLeft < .8f) leftTriggerWasHeld = false;
-        //if (TriggerValueRight < .8f) rightTriggerWasHeld = false;
+        leftTriggerWasHeld = TriggerValueLeft > triggerHoldTreshold;
+        rightTriggerWasHeld = TriggerValueRight > triggerHoldTreshold;
     }
 
     public void GiveHapticFeedback(float amount, float duration)
