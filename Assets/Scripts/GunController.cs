@@ -5,8 +5,14 @@ using UnityEngine;
 public class GunController : MonoBehaviour
 {
     [SerializeField] Transform GoBackTarget;
+    [SerializeField] Transform Barrel;
+    [SerializeField] GameObject Projectile;
+    [SerializeField] float shootCooldown = 0;
+    [SerializeField] float speed = 1;
 
     Transform currentTarget;
+
+    float nextShootTargetTime = -1;
 
     void Start()
     {
@@ -22,6 +28,26 @@ public class GunController : MonoBehaviour
         {
             currentTarget = GoBackTarget;
         }
+    }
+    public void Shoot()
+    {
+        if (nextShootTargetTime > Time.time) return;
+        if (Barrel == null || Projectile == null) return;
+
+        Vector3 dir = transform.forward;
+        Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
+        GameObject instantiatedBullet = Instantiate(Projectile, Barrel.position, rotation);
+
+        if(TryGetComponent(out Projectile projectile))
+        {
+            projectile.Initialize(dir, speed);
+        }
+        else
+        {
+            Destroy(instantiatedBullet);
+        }
+
+        nextShootTargetTime = Time.time + shootCooldown;
     }
 
     void Update()
