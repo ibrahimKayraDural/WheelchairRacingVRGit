@@ -12,16 +12,20 @@ public class ControllerInput : MonoBehaviour
     [SerializeField] XRBaseController rightXRController;
     [SerializeField] LayerMask InteractableLayer;
     [SerializeField] float triggerHoldTreshold = .8f;
+    [SerializeField] float handTriggerSize = .05f;
 
     public InputDevice _rightController;
     public InputDevice _leftController;
     public InputDevice _HMD;
 
+    Transform leftHoldPos = null;
+    Transform rightHoldPos = null;
+
     Transform leftModel = null;
     Transform rightModel = null;
 
-    MeshRenderer leftRenderer = null;
-    MeshRenderer rightRenderer = null;
+    Animator leftAnimator = null;
+    Animator rightAnimator = null;
 
     Vector3 oldLocalPosLeft = Vector3.zero;
     Vector3 oldLocalPosRight = Vector3.zero;
@@ -56,13 +60,13 @@ public class ControllerInput : MonoBehaviour
         oldLocalPosLeft = leftXRController.transform.localPosition;
         oldLocalPosRight = rightXRController.transform.localPosition;
 
-        PlaceholderAnim(GripLeft, GripRight, TriggerValueLeft, TriggerValueRight);
+        HandAnim(GripLeft, GripRight);
 
         if (GripLeft)
         {
             if(leftHeldGun == null)
             {
-                Collider[] cols = Physics.OverlapSphere(leftModel.position, leftModel.localScale.x, InteractableLayer);
+                Collider[] cols = Physics.OverlapSphere(leftModel.position, handTriggerSize, InteractableLayer);
                 WheelController WController = null;
 
                 foreach (Collider col in cols)
@@ -81,7 +85,7 @@ public class ControllerInput : MonoBehaviour
                         }
 
                         leftHeldGun = outGunController;
-                        leftHeldGun.GetHeld(leftModel);
+                        leftHeldGun.GetHeld(leftHoldPos);
 
                         break;
                     }
@@ -119,7 +123,7 @@ public class ControllerInput : MonoBehaviour
             if (rightHeldGun == null)
             {
 
-                Collider[] cols = Physics.OverlapSphere(rightModel.position, rightModel.localScale.x, InteractableLayer);
+                Collider[] cols = Physics.OverlapSphere(rightModel.position, handTriggerSize, InteractableLayer);
                 WheelController WController = null;
 
                 foreach (Collider col in cols)
@@ -138,7 +142,7 @@ public class ControllerInput : MonoBehaviour
                         }
 
                         rightHeldGun = outGunController;
-                        rightHeldGun.GetHeld(rightModel);
+                        rightHeldGun.GetHeld(rightHoldPos);
                         break;
                     }
                 }
@@ -182,13 +186,10 @@ public class ControllerInput : MonoBehaviour
         _rightController.SendHapticImpulse(0, amount, duration);
     }
 
-    void PlaceholderAnim(bool GripLeft, bool GripRight, float TriggerValueLeft, float TriggerValueRight)
+    void HandAnim(bool GripLeft, bool GripRight)
     {
-        leftModel.localScale = Vector3.one * (1 - TriggerValueLeft + .1f) / 10;
-        rightModel.localScale = Vector3.one * (1 - TriggerValueRight + .1f) / 10;
-
-        if (leftRenderer != null) leftRenderer.material.color = GripLeft ? Color.red : Color.yellow;
-        if (rightRenderer != null) rightRenderer.material.color = GripRight ? Color.red : Color.yellow;
+        if (leftAnimator != null) leftAnimator.SetBool("Close", GripLeft);
+        if (rightAnimator != null) rightAnimator.SetBool("Close", GripRight);
     }
 
     void InitializeInputDevices()
@@ -218,22 +219,21 @@ public class ControllerInput : MonoBehaviour
         leftModel = leftXRController.model;
         rightModel = rightXRController.model;
 
-        if (leftModel.TryGetComponent(out MeshRenderer MR))
+        if (leftModel.TryGetComponent(out HandAnimatorReferencer reference))
         {
-            leftRenderer = MR;
-            leftRenderer.material.color = Color.yellow;
+            leftAnimator = reference.AnimatorReference;
+            leftHoldPos = reference.HoldPosition;
         }
-        if (rightModel.TryGetComponent(out MR))
+        if (rightModel.TryGetComponent(out reference))
         {
-            rightRenderer = MR;
-            rightRenderer.material.color = Color.yellow;
+            rightAnimator = reference.AnimatorReference;
+            rightHoldPos = reference.HoldPosition;
         }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Vector3 pos = rightXRController.transform.position;
-        Gizmos.DrawLine(pos, pos + LocalVelocityRight * 1000000);
+        Gizmos.DrawSphere(leftModel.transform.position, handTriggerSize);
     }
 }
