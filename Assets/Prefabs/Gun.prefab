@@ -48,7 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab9422a23c7568c4088271fdf91385f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laserRenderer: {fileID: 5430769128167062563}
+  GunShootSFX: {fileID: 1744386895024726008, guid: 8679763bfabfc444ea48d5b52027ceb2, type: 3}
+  GunHoldSFX: {fileID: 1744386895024726008, guid: a2650f77370c2574d9038e66718a0f2b, type: 3}
+  GunReleaseSFX: {fileID: 1744386895024726008, guid: 2e7f712300f5cda4da70d4bd3aea1950, type: 3}
+  LaserRenderer: {fileID: 5430769128167062563}
   GoBackTarget: {fileID: 0}
   Barrel: {fileID: 2136665884991867907}
   ShootLayers:

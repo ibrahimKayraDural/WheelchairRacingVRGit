@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class GunController : MonoBehaviour
 {
-    [SerializeField] LineRenderer laserRenderer;
+    [SerializeField] GameObject GunShootSFX;
+    [SerializeField] GameObject GunHoldSFX;
+    [SerializeField] GameObject GunReleaseSFX;
+    [SerializeField] LineRenderer LaserRenderer;
     [SerializeField] Transform GoBackTarget;
     [SerializeField] Transform Barrel;
     [SerializeField] LayerMask ShootLayers;
@@ -15,6 +18,7 @@ public class GunController : MonoBehaviour
     //[SerializeField] float speed = 1;
     //[SerializeField] GameObject Projectile;
 
+    Transform cameraTransform;
     Transform currentTarget;
     float nextShootTargetTime = -1;
     bool isHeld;
@@ -22,8 +26,10 @@ public class GunController : MonoBehaviour
     void Start()
     {
         currentTarget = GoBackTarget;
-        laserRenderer.startWidth = rayRadius * 2;
-        laserRenderer.endWidth = rayRadius * 2;
+        LaserRenderer.startWidth = rayRadius * 2;
+        LaserRenderer.endWidth = rayRadius * 2;
+
+        cameraTransform = Camera.main.transform;
     }
     void Update()
     {
@@ -35,8 +41,8 @@ public class GunController : MonoBehaviour
 
         if(isHeld)
         {
-            laserRenderer.SetPosition(0, Barrel.position);
-            laserRenderer.SetPosition(1, Barrel.position + transform.forward * rayLength);
+            LaserRenderer.SetPosition(0, Barrel.position);
+            LaserRenderer.SetPosition(1, Barrel.position + transform.forward * rayLength);
         }
     }
 
@@ -44,7 +50,8 @@ public class GunController : MonoBehaviour
     {
         currentTarget = holder;
         isHeld = true;
-        laserRenderer.enabled = true;
+        LaserRenderer.enabled = true;
+        PlayAudioOneShot(GunHoldSFX);
     }
     public void GetUnheld(bool ResetPosition = true)
     {
@@ -54,7 +61,8 @@ public class GunController : MonoBehaviour
         }
 
         isHeld = false;
-        laserRenderer.enabled = false;
+        LaserRenderer.enabled = false;
+        PlayAudioOneShot(GunReleaseSFX);
     }
     public void Shoot()
     {
@@ -64,18 +72,20 @@ public class GunController : MonoBehaviour
         Vector3 dir = transform.forward;
 
         RaycastHit hitInfo;
-
-        //Ray ray = new Ray(Barrel.position, dir);
-        //Physics.Raycast(ray, out hitInfo, rayLength, ShootLayers)
         if (Physics.SphereCast(Barrel.position, rayRadius, dir, out hitInfo, rayLength, ShootLayers))
         {
             if (hitInfo.collider.gameObject.TryGetComponent(out Shootable_Base shootable)) shootable.OnShot();
-            laserRenderer.SetPosition(1, hitInfo.transform.position);
+            LaserRenderer.SetPosition(1, hitInfo.transform.position);
         }
 
+        PlayAudioOneShot(GunShootSFX);
 
         StartCoroutine(LaserBlink());
+
         /*
+        Ray ray = new Ray(Barrel.position, dir);
+        Physics.Raycast(ray, out hitInfo, rayLength, ShootLayers)
+
         Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
         GameObject instantiatedBullet = Instantiate(Projectile, Barrel.position, rotation);
 
@@ -92,12 +102,18 @@ public class GunController : MonoBehaviour
         nextShootTargetTime = Time.time + shootCooldown;
     }
 
+    void PlayAudioOneShot(GameObject audio)
+    {
+        audio = Instantiate(audio, Barrel.position, Quaternion.identity);
+        if (cameraTransform != null) audio.transform.parent = cameraTransform;
+    }
+
     IEnumerator LaserBlink()
     {
-        laserRenderer.enabled = false;
+        LaserRenderer.enabled = false;
 
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.05f);
 
-        if (isHeld) laserRenderer.enabled = true;
+        if (isHeld) LaserRenderer.enabled = true;
     }
 }

@@ -7,6 +7,8 @@ using TMPro;
 
 public class WheelchairController : MonoBehaviour
 {
+    [SerializeField] GunController gc;
+    [SerializeField] Transform gunoffsetter;
     [SerializeField] Rigidbody _rb;
     [SerializeField] TextMeshProUGUI SpeedDisplay;
     [SerializeField] TextMeshProUGUI DebugScreen1;
@@ -15,6 +17,7 @@ public class WheelchairController : MonoBehaviour
     [SerializeField] ControllerInput controllerInput;
     [SerializeField] Transform RightWheelMesh;
     [SerializeField] Transform LeftWheelMesh;
+    [SerializeField] GameObject HitImpactSFX;
 
     [Header("EditorValueMultiplier will work in editor")]
     [SerializeField] float EditorValueMultiplier = 200f;
@@ -27,6 +30,7 @@ public class WheelchairController : MonoBehaviour
     [SerializeField] float TurnBrakePower = 0.001f;
     [SerializeField] [Range(0, 1)] float HittableSpeedPercent = .8f;
     [SerializeField] float wheelMaxTurnSpeed = 1;
+    [SerializeField] float impactSFXCooldown = .2f;
     [SerializeField] AnimationCurve TorqueSpeedCurve;
     [SerializeField] AnimationCurve CollisionHapticCurve;
 
@@ -36,12 +40,19 @@ public class WheelchairController : MonoBehaviour
     float velocityNormalized => _rb.velocity.magnitude / MaxVelocity;
     bool CanHitInteract => (int)_rb.velocity.magnitude > MaxVelocity * HittableSpeedPercent;
 
+    Transform cameraTransform;
+    float HitSFXTargetTime = -1;
+
+    int debugDirection = 1;
+
     void Start()
     {
         if (_rb == null) _rb = GetComponent<Rigidbody>();
 
         StartPos = transform.position;
         StartRot = transform.rotation;
+
+        cameraTransform = Camera.main.transform;
     }
 
     void Update()
@@ -66,14 +77,30 @@ public class WheelchairController : MonoBehaviour
             LeftWheelMesh.Rotate(targetRotation);
         }
 
-        if (Input.GetKeyDown(KeyCode.A)) PushChair(100, false);
-        if (Input.GetKeyDown(KeyCode.D)) PushChair(100, true);
+        if (Input.GetKeyDown(KeyCode.A)) PushChair(0.001f * debugDirection, false);
+        if (Input.GetKeyDown(KeyCode.D)) PushChair(0.001f * debugDirection, true);
         if (Input.GetKeyDown(KeyCode.R))
         {
             transform.position = StartPos;
             transform.rotation = StartRot;
             _rb.velocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            gc.Shoot();
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            gc.GetHeld(gunoffsetter);
+        }
+        if (Input.GetKeyUp(KeyCode.O))
+        {
+            gc.GetUnheld();
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            debugDirection *= -1;
         }
 
         DisplaySpeed();
@@ -132,15 +159,26 @@ public class WheelchairController : MonoBehaviour
 
         if((int)speed > MaxVelocity * HittableSpeedPercent)
         {
-            CustomDebug(collision.gameObject.name);
+            //CustomDebug(collision.gameObject.name);
+
+            if(HitSFXTargetTime < Time.time)
+            {
+                PlayAudioOneShot(HitImpactSFX);
+
+                HitSFXTargetTime = Time.time + impactSFXCooldown;
+            }
 
             if (collision.gameObject.TryGetComponent(out Hittable_Base hittable))
             {
-                CustomDebug("in");
-
                 hittable.OnHitted();
             }
         }
+    }
+
+    void PlayAudioOneShot(GameObject audio)
+    {
+        audio = Instantiate(audio, transform.position, Quaternion.identity);
+        if (cameraTransform != null) audio.transform.parent = cameraTransform;
     }
 
     int debugIndex = 0;
