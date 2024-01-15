@@ -56,7 +56,7 @@ MonoBehaviour:
   Barrel: {fileID: 2136665884991867907}
   ShootLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 833
   shootCooldown: 0
   rayLength: 100
   rayRadius: 0.01
