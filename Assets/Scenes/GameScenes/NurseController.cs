@@ -15,6 +15,7 @@ public class NurseController : MonoBehaviour
     float slowTargetTime;
     bool isSlowed = false;
     [SerializeField] float slowAmount = 0.5f;
+    public bool GO = false;
 
     bool slowToggle = true;
     void Start()
@@ -26,27 +27,30 @@ public class NurseController : MonoBehaviour
     void Update()
     {
 
-
-        currentTime += Time.deltaTime * speed;
-        SplineAnimRef.ElapsedTime = currentTime;
-
-
-        if (isSlowed)
+        if (false)
         {
-            if (slowTargetTime > Time.time && slowToggle)
+            currentTime += Time.deltaTime * speed;
+            SplineAnimRef.ElapsedTime = currentTime;
+
+
+            if (isSlowed)
             {
-                speed *= slowAmount;
-                
-                slowToggle = false;
-            }
-            else if (slowTargetTime < Time.time)
-            {
-                speed = DefaultSpeed;
-                isSlowed = false;
-                slowToggle = true;
-                Debug.Log(speed);
+                if (slowTargetTime > Time.time && slowToggle)
+                {
+                    speed *= slowAmount;
+
+                    slowToggle = false;
+                }
+                else if (slowTargetTime < Time.time)
+                {
+                    speed = DefaultSpeed;
+                    isSlowed = false;
+                    slowToggle = true;
+                    Debug.Log(speed);
+                }
             }
         }
+
     }
 
     public void slowNurse()
