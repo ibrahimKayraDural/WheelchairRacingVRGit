@@ -19,7 +19,7 @@ public class NurseTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
         NC.GOOO();
+        Destroy(gameObject);
     }
 }

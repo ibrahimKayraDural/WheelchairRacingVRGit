@@ -38,7 +38,7 @@ public class NurseController : MonoBehaviour
     void Update()
     {
 
-        if (false)
+        if (GO)
         {
             currentTime += Time.deltaTime * speed;
             SplineAnimRef.ElapsedTime = currentTime;
