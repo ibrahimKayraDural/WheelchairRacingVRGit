@@ -550,6 +550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gc: {fileID: 0}
+  gunoffsetter: {fileID: 5813266800243241625}
   _rb: {fileID: 5307879574404021352}
   SpeedDisplay: {fileID: 1638041815403153773}
   DebugScreen1: {fileID: 1848542676873293667}

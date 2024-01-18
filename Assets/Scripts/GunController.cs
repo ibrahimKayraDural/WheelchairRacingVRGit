@@ -14,6 +14,7 @@ public class GunController : MonoBehaviour
     [SerializeField] float shootCooldown = 0;
     [SerializeField] float rayLength = 100;
     [SerializeField] float rayRadius = 1;
+    [SerializeField] bool startStill = false;
 
     //[SerializeField] float speed = 1;
     //[SerializeField] GameObject Projectile;
@@ -25,7 +26,8 @@ public class GunController : MonoBehaviour
 
     void Start()
     {
-        currentTarget = GoBackTarget;
+        if (startStill == false) currentTarget = GoBackTarget;
+
         LaserRenderer.startWidth = rayRadius * 2;
         LaserRenderer.endWidth = rayRadius * 2;
 
