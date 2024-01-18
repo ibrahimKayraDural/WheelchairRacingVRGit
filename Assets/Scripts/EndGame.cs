@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class EndGame : MonoBehaviour
@@ -15,8 +16,8 @@ public class EndGame : MonoBehaviour
     {
         
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        Application.Quit();
+        //SceneManager.LoadScene();
     }
 }
