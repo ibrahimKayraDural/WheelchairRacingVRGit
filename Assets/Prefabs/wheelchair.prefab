@@ -509,7 +509,7 @@ GameObject:
   - component: {fileID: 5307879574404021352}
   m_Layer: 7
   m_Name: wheelchair
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -560,13 +560,13 @@ MonoBehaviour:
   RightWheelMesh: {fileID: 2843445640058756924}
   LeftWheelMesh: {fileID: 2477413911917888840}
   HitImpactSFX: {fileID: 1744386895024726008, guid: bea972e8a17f65840ae372af8c25596f, type: 3}
-  EditorValueMultiplier: 20
+  EditorValueMultiplier: 25
   BrakePower: 0.5
-  PushPower: 100
-  TurnPower: 150
-  MaxVelocity: 25
+  PushPower: 50
+  TurnPower: 100
+  MaxVelocity: 20
   TurnBrakePower: 0.003
-  HittableSpeedPercent: 0.8
+  HittableSpeedPercent: 0.6
   wheelMaxTurnSpeed: 500
   impactSFXCooldown: 0.2
   TorqueSpeedCurve:

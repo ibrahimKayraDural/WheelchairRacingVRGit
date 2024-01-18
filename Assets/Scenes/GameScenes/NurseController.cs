@@ -6,6 +6,7 @@ using UnityEngine;
 public class NurseController : MonoBehaviour
 {
     // Start is called before the first frame update
+    [SerializeField] LevelManager levelManager;
     [SerializeField] SplineAnimate SplineAnimRef;
     [SerializeField] float speed = 1;
     float currentTime;
@@ -57,7 +58,6 @@ public class NurseController : MonoBehaviour
                     speed = DefaultSpeed;
                     isSlowed = false;
                     slowToggle = true;
-                    Debug.Log(speed);
                 }
             }
         }
@@ -69,17 +69,21 @@ public class NurseController : MonoBehaviour
         isSlowed = true;
 
         slowTargetTime = Time.time + slowTime;
-        Debug.Log(Time.time);
-        Debug.Log(slowTargetTime);
     }
 
     IEnumerator slowTimer()
     {
         while (!isSlowed)
         {
-
-
             yield return new WaitForSeconds(slowTime);
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag != "Player") return;
+        if (levelManager == null) return;
+
+        levelManager.GoToLevel(levelManager.currentSceneIndex);
     }
 }
