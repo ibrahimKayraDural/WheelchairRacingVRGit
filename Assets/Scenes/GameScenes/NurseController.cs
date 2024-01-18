@@ -17,7 +17,18 @@ public class NurseController : MonoBehaviour
     [SerializeField] float slowAmount = 0.5f;
     public bool GO = false;
 
+    [SerializeField] AudioSource metal;
+    [SerializeField] AudioSource boom;
+
+
     bool slowToggle = true;
+
+    public void GOOO()
+    {
+        GO = true;
+        metal.Play();
+        boom.Play();
+    }
     void Start()
     {
         SplineAnimRef = gameObject.GetComponent<SplineAnimate>();
