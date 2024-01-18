@@ -8,6 +8,7 @@ public class StartManagerScript : MonoBehaviour
     [SerializeField] AudioSource TvAudio;
     [SerializeField] Image BlackScreen;
     [SerializeField] AnimationCurve soundCurve;
+    [SerializeField] float staticSoundLenght = .5f;
 
     // Start is called before the first frame update
     void Start()
@@ -69,7 +70,7 @@ public class StartManagerScript : MonoBehaviour
 
                 yield return new WaitForEndOfFrame();
             }
-            Invoke("TvSoundStop", 0.2f);
+            Invoke("TvSoundStop", staticSoundLenght);
         }
     }
 
