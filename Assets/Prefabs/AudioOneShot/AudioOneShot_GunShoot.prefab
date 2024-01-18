@@ -46,10 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Clips:
-  - {fileID: 8300000, guid: 1859508888740324db7842b9050a6a87, type: 3}
-  - {fileID: 8300000, guid: 9b8d93dba17fc3e4cbb8156139f60bb3, type: 3}
-  - {fileID: 8300000, guid: 1697bcb284d63bb46a3360ad97ff523d, type: 3}
-  - {fileID: 8300000, guid: 44260f14cf4c6c648b7a3e48c5ae997d, type: 3}
+  - {fileID: 8300000, guid: ad59af11d5acdae49b7e22a486834196, type: 3}
+  - {fileID: 8300000, guid: 5c2d2ad295523114c92caf93896cf616, type: 3}
+  - {fileID: 8300000, guid: d1d897c1c7e38d4458c2dda7b927d300, type: 3}
+  - {fileID: 8300000, guid: ffb79a3c82c9939439ff2e19b009ccd8, type: 3}
   _PitchVariation: 0.2
 --- !u!82 &3857948212276654353
 AudioSource:
