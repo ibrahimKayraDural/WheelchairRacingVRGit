@@ -19,6 +19,7 @@ public class NurseTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        NC.GO = true;
+
+        NC.GOOO();
     }
 }
