@@ -39,6 +39,9 @@ public class ControllerInput : MonoBehaviour
     bool rightTriggerWasHeld;
     bool leftTriggerWasHeld;
 
+    bool rightHasHeldGun;
+    bool leftHasHeldGun;
+
     GunController rightHeldGun = null;
     GunController leftHeldGun = null;
 
@@ -78,14 +81,19 @@ public class ControllerInput : MonoBehaviour
                     }
                     else if (col.gameObject.TryGetComponent(out GunController outGunController))
                     {
-                        if (rightHeldGun != null)
+                        if (rightHeldGun == outGunController)
                         {
-                            rightHeldGun.GetUnheld(false);
-                            rightHeldGun = null;
+                            if (leftHasHeldGun == true) break;
+                            else
+                            {
+                                rightHeldGun.GetUnheld();
+                                rightHeldGun = null;
+                            }
                         }
 
                         leftHeldGun = outGunController;
                         leftHeldGun.GetHeld(leftHoldPos);
+                        leftHasHeldGun = true;
 
                         break;
                     }
@@ -135,14 +143,19 @@ public class ControllerInput : MonoBehaviour
                     }
                     else if (col.gameObject.TryGetComponent(out GunController outGunController))
                     {
-                        if (leftHeldGun != null)
+                        if (leftHeldGun == outGunController)
                         {
-                            leftHeldGun.GetUnheld(false);
-                            leftHeldGun = null;
+                            if (rightHasHeldGun == true) break;
+                            else
+                            {
+                                leftHeldGun.GetUnheld();
+                                leftHeldGun = null;
+                            }
                         }
 
                         rightHeldGun = outGunController;
                         rightHeldGun.GetHeld(rightHoldPos);
+                        rightHasHeldGun = true;
                         break;
                     }
                 }
@@ -174,8 +187,16 @@ public class ControllerInput : MonoBehaviour
             rightHeldGun = null;
         }
 
-        if (GripLeft == false) leftWasGripped = false;
-        if (GripRight == false) rightWasGripped = false;
+        if (GripLeft == false)
+        {
+            leftWasGripped = false;
+            leftHasHeldGun = false;
+        }
+        if (GripRight == false)
+        {
+            rightWasGripped = false;
+            rightHasHeldGun = false;
+        }
         leftTriggerWasHeld = TriggerValueLeft > triggerHoldTreshold;
         rightTriggerWasHeld = TriggerValueRight > triggerHoldTreshold;
     }
