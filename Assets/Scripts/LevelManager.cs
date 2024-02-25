@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    int currentSceneIndex => SceneManager.GetActiveScene().buildIndex;
+    public int currentSceneIndex => SceneManager.GetActiveScene().buildIndex;
 
     public void GoToNextLevel()
     {

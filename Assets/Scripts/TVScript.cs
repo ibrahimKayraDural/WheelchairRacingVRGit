@@ -7,16 +7,6 @@ public class TVScript : MonoBehaviour
 {
     [SerializeField] TextMeshPro TVText;
     [SerializeField] AudioSource TVAudio;
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void WakeUp()
     {
         TVText.text = "Wake Up";

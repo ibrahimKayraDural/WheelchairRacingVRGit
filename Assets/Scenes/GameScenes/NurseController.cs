@@ -6,6 +6,7 @@ using UnityEngine;
 public class NurseController : MonoBehaviour
 {
     // Start is called before the first frame update
+    [SerializeField] LevelManager levelManager;
     [SerializeField] SplineAnimate SplineAnimRef;
     [SerializeField] float speed = 1;
     float currentTime;
@@ -15,8 +16,20 @@ public class NurseController : MonoBehaviour
     float slowTargetTime;
     bool isSlowed = false;
     [SerializeField] float slowAmount = 0.5f;
+    public bool GO = false;
+
+    [SerializeField] AudioSource metal;
+    [SerializeField] AudioSource boom;
+
 
     bool slowToggle = true;
+
+    public void GOOO()
+    {
+        GO = true;
+        metal.Play();
+        boom.Play();
+    }
     void Start()
     {
         SplineAnimRef = gameObject.GetComponent<SplineAnimate>();
@@ -26,27 +39,29 @@ public class NurseController : MonoBehaviour
     void Update()
     {
 
-
-        currentTime += Time.deltaTime * speed;
-        SplineAnimRef.ElapsedTime = currentTime;
-
-
-        if (isSlowed)
+        if (GO)
         {
-            if (slowTargetTime > Time.time && slowToggle)
+            currentTime += Time.deltaTime * speed;
+            SplineAnimRef.ElapsedTime = currentTime;
+
+
+            if (isSlowed)
             {
-                speed *= slowAmount;
-                
-                slowToggle = false;
-            }
-            else if (slowTargetTime < Time.time)
-            {
-                speed = DefaultSpeed;
-                isSlowed = false;
-                slowToggle = true;
-                Debug.Log(speed);
+                if (slowTargetTime > Time.time && slowToggle)
+                {
+                    speed *= slowAmount;
+
+                    slowToggle = false;
+                }
+                else if (slowTargetTime < Time.time)
+                {
+                    speed = DefaultSpeed;
+                    isSlowed = false;
+                    slowToggle = true;
+                }
             }
         }
+
     }
 
     public void slowNurse()
@@ -54,17 +69,21 @@ public class NurseController : MonoBehaviour
         isSlowed = true;
 
         slowTargetTime = Time.time + slowTime;
-        Debug.Log(Time.time);
-        Debug.Log(slowTargetTime);
     }
 
     IEnumerator slowTimer()
     {
         while (!isSlowed)
         {
-
-
             yield return new WaitForSeconds(slowTime);
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag != "Player") return;
+        if (levelManager == null) return;
+
+        levelManager.GoToLevel(levelManager.currentSceneIndex);
     }
 }
