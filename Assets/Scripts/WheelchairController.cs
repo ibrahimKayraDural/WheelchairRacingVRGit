@@ -172,6 +172,13 @@ public class WheelchairController : MonoBehaviour
             {
                 hittable.OnHitted();
             }
+            else
+            {
+                Vector3 targetVel = _rb.velocity;
+                targetVel /= 2;
+                targetVel.y = _rb.velocity.y;
+                _rb.velocity = targetVel;
+            }
         }
     }
 
