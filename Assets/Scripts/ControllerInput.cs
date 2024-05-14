@@ -14,6 +14,8 @@ public class ControllerInput : MonoBehaviour
     [SerializeField] float triggerHoldTreshold = .8f;
     [SerializeField] float handTriggerSize = .05f;
 
+    public bool DoesBothHandsHoldWheel => rightHoldsWheel && leftHoldsWheel;
+
     public InputDevice _rightController;
     public InputDevice _leftController;
     public InputDevice _HMD;
@@ -41,6 +43,9 @@ public class ControllerInput : MonoBehaviour
 
     bool rightHasHeldGun;
     bool leftHasHeldGun;
+
+    bool rightHoldsWheel;
+    bool leftHoldsWheel;
 
     GunController rightHeldGun = null;
     GunController leftHeldGun = null;
@@ -113,6 +118,12 @@ public class ControllerInput : MonoBehaviour
                     {
                         WController.PushBrake(TriggerValueLeft * Time.deltaTime);
                     }
+
+                    leftHoldsWheel = true;
+                }
+                else
+                {
+                    leftHoldsWheel = false;
                 }
             }
             else if(TriggerValueLeft > triggerHoldTreshold && leftTriggerWasHeld == false)
@@ -174,6 +185,12 @@ public class ControllerInput : MonoBehaviour
                     {
                         WController.PushBrake(TriggerValueRight * Time.deltaTime);
                     }
+
+                    rightHoldsWheel = true;
+                }
+                else
+                {
+                    rightHoldsWheel = false;
                 }
             }
             else if (TriggerValueRight > triggerHoldTreshold && rightTriggerWasHeld == false)

@@ -8,31 +8,29 @@ using TMPro;
 public class WheelchairController : MonoBehaviour
 {
     [SerializeField] GunController gc;
+    [SerializeField] ControllerInput controllerInput;
     [SerializeField] Transform gunoffsetter;
     [SerializeField] Rigidbody _rb;
     [SerializeField] TextMeshProUGUI SpeedDisplay;
     [SerializeField] TextMeshProUGUI DebugScreen1;
     [SerializeField] TextMeshProUGUI DebugScreen2;
     [SerializeField] TextMeshProUGUI DebugScreen3;
-    [SerializeField] ControllerInput controllerInput;
     [SerializeField] Transform RightWheelMesh;
     [SerializeField] Transform LeftWheelMesh;
     [SerializeField] GameObject HitImpactSFX;
 
-    [Header("EditorValueMultiplier will work in editor")]
-    [SerializeField] float EditorValueMultiplier = 200f;
-    [Header("vvv Values That will be affected by Editor Value Multiplier STARTED vvv")]
+    float EditorValueMultiplier = 25f;
     [SerializeField] float BrakePower = 50f;
     [SerializeField] float PushPower = 50f;
     [SerializeField] float TurnPower = 50f;
-    [Header("^^^ Values That will be affected by Editor Value Multiplier ENDED ^^^")]
     [SerializeField] float MaxVelocity = 10f;
     [SerializeField] float TurnBrakePower = 0.001f;
     [SerializeField] [Range(0, 1)] float HittableSpeedPercent = .8f;
     [SerializeField] float wheelMaxTurnSpeed = 1;
     [SerializeField] float impactSFXCooldown = .2f;
-    [SerializeField] AnimationCurve TorqueSpeedCurve;
+    //[SerializeField] AnimationCurve TorqueSpeedCurve;
     [SerializeField] AnimationCurve CollisionHapticCurve;
+    [SerializeField] AnimationCurve BackwardsVelocityCurve;
 
     public Vector3 StartPos { get; private set; }
     public Quaternion StartRot { get; private set; }
@@ -45,6 +43,11 @@ public class WheelchairController : MonoBehaviour
 
     int debugDirection = 1;
 
+    /*
+        Hýz kaybetmeyi azalt veya sýfýrla    [OK]
+        Tek tekerle itersen sadece dönsün    [OK]
+        Yavaþlamak için tekeri geri çeksin   [OK]
+     */
     void Start()
     {
         if (_rb == null) _rb = GetComponent<Rigidbody>();
@@ -76,7 +79,7 @@ public class WheelchairController : MonoBehaviour
             RightWheelMesh.Rotate(targetRotation);
             LeftWheelMesh.Rotate(targetRotation);
         }
-
+        //DEGUB START
         if (Input.GetKeyDown(KeyCode.A)) PushChair(0.001f * debugDirection, false);
         if (Input.GetKeyDown(KeyCode.D)) PushChair(0.001f * debugDirection, true);
         if (Input.GetKeyDown(KeyCode.R))
@@ -102,6 +105,7 @@ public class WheelchairController : MonoBehaviour
         {
             debugDirection *= -1;
         }
+        //DEBUG END
 
         DisplaySpeed();
     }
@@ -116,7 +120,11 @@ public class WheelchairController : MonoBehaviour
 
     public void PushChair(float powerFraction, bool fromRight)
     {
-        _rb.velocity += transform.forward * powerFraction * PushPower * EditorValueMultiplier;
+        float backwardsPower = 1;
+        if (powerFraction < 0) backwardsPower = BackwardsVelocityCurve.Evaluate(velocityNormalized);
+
+        if (controllerInput.DoesBothHandsHoldWheel)
+            _rb.velocity += transform.forward * powerFraction * PushPower * EditorValueMultiplier * backwardsPower;
 
         int direcitonInt = fromRight ? -1 : 1;
 
