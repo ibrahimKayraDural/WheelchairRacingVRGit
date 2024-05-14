@@ -126,6 +126,8 @@ public class WheelchairController : MonoBehaviour
         if (controllerInput.DoesBothHandsHoldWheel)
             _rb.velocity += transform.forward * powerFraction * PushPower * EditorValueMultiplier * backwardsPower;
 
+        CustomDebug((controllerInput.DoesBothHandsHoldWheel ? "T":"F") + ", BP:" + backwardsPower);
+
         int direcitonInt = fromRight ? -1 : 1;
 
         _rb.AddTorque(Vector3.up * direcitonInt * TurnPower * powerFraction * EditorValueMultiplier);
