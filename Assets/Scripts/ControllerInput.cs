@@ -126,15 +126,21 @@ public class ControllerInput : MonoBehaviour
                     leftHoldsWheel = false;
                 }
             }
-            else if(TriggerValueLeft > triggerHoldTreshold && leftTriggerWasHeld == false)
+            else
             {
-                leftHeldGun.Shoot();
+                leftHoldsWheel = false;
+
+                if (TriggerValueLeft > triggerHoldTreshold && leftTriggerWasHeld == false)
+                {
+                    leftHeldGun.Shoot();
+                }
             }
         }
         else
         {
             if (leftHeldGun != null) leftHeldGun.GetUnheld();
             leftHeldGun = null;
+            leftHoldsWheel = false;
         }
 
         if (GripRight)
@@ -193,15 +199,21 @@ public class ControllerInput : MonoBehaviour
                     rightHoldsWheel = false;
                 }
             }
-            else if (TriggerValueRight > triggerHoldTreshold && rightTriggerWasHeld == false)
+            else
             {
-                rightHeldGun.Shoot();
+                rightHoldsWheel = false;
+
+                if (TriggerValueRight > triggerHoldTreshold && rightTriggerWasHeld == false)
+                {
+                    rightHeldGun.Shoot();
+                }
             }
         }
         else
         {
             if (rightHeldGun != null) rightHeldGun.GetUnheld();
             rightHeldGun = null;
+            rightHoldsWheel = false;
         }
 
         if (GripLeft == false)
