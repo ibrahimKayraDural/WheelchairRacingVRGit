@@ -8,6 +8,7 @@ public class GunController : MonoBehaviour
     [SerializeField] GameObject GunHoldSFX;
     [SerializeField] GameObject GunReleaseSFX;
     [SerializeField] LineRenderer LaserRenderer;
+    //[SerializeField] Animator _Animator;
     [SerializeField] Transform GoBackTarget;
     [SerializeField] Transform Barrel;
     [SerializeField] LayerMask ShootLayers;
@@ -83,6 +84,7 @@ public class GunController : MonoBehaviour
         PlayAudioOneShot(GunShootSFX);
 
         StartCoroutine(LaserBlink());
+        //_Animator.SetTrigger("Shoot");
 
         /*
         Ray ray = new Ray(Barrel.position, dir);
