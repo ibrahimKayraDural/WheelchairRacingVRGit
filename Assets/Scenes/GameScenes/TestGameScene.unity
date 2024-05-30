@@ -5644,6 +5644,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NC: {fileID: 1430008951}
   Song: {fileID: 6926474210226503600, guid: 522b8d300ba035446be01d37f676b537, type: 3}
+  OnTriggered:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1030420209}
+        m_TargetAssemblyTypeName: VolumeController, Assembly-CSharp
+        m_MethodName: SetVolume
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!65 &975419109
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5931,6 +5946,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1430008958}
   m_SourcePrefab: {fileID: 100100000, guid: 717e7d4a82ae46c4cb4c275816671e3f, type: 3}
+--- !u!114 &1030420209 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4120311807202641210, guid: 717e7d4a82ae46c4cb4c275816671e3f, type: 3}
+  m_PrefabInstance: {fileID: 1030420208}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe33f502a30a2348b0551df7a6a660c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1055139863
 PrefabInstance:
   m_ObjectHideFlags: 0
