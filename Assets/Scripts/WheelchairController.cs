@@ -18,6 +18,7 @@ public class WheelchairController : MonoBehaviour
     [SerializeField] Transform RightWheelMesh;
     [SerializeField] Transform LeftWheelMesh;
     [SerializeField] GameObject HitImpactSFX;
+    [SerializeField] VolumeController WheelVolumeController;
 
     float EditorValueMultiplier = 25f;
     [SerializeField] float BrakePower = 50f;
@@ -28,6 +29,7 @@ public class WheelchairController : MonoBehaviour
     [SerializeField] [Range(0, 1)] float HittableSpeedPercent = .8f;
     [SerializeField] float wheelMaxTurnSpeed = 1;
     [SerializeField] float impactSFXCooldown = .2f;
+    [SerializeField] bool isDebug;
     //[SerializeField] AnimationCurve TorqueSpeedCurve;
     [SerializeField] AnimationCurve CollisionHapticCurve;
     [SerializeField] AnimationCurve BackwardsVelocityCurve;
@@ -108,6 +110,7 @@ public class WheelchairController : MonoBehaviour
         //DEBUG END
 
         DisplaySpeed();
+        WheelVolumeController.SetVolume(velocityNormalized);
     }
 
     private void DisplaySpeed()
@@ -123,7 +126,7 @@ public class WheelchairController : MonoBehaviour
         float backwardsPower = 1;
         if (powerFraction < 0) backwardsPower = BackwardsVelocityCurve.Evaluate(velocityNormalized);
 
-        if (controllerInput.DoesBothHandsHoldWheel)
+        if (controllerInput.DoesBothHandsHoldWheel || isDebug)
             _rb.velocity += transform.forward * powerFraction * PushPower * EditorValueMultiplier * backwardsPower;
 
         CustomDebug((controllerInput.DoesBothHandsHoldWheel ? "T":"F") + ", BP:" + backwardsPower);
