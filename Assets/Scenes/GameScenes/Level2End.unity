@@ -949,7 +949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7285fe40c50ed9141a09b9bd57323745, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _SceneToOpenIndex: 3
+  _SceneToOpenIndex: 5
   _BlackoutImage: {fileID: 2072555806}
   _WaitSeconds: 5
   _BlackoutDuration: 2
