@@ -248,7 +248,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You are now Faster
+  m_text: You are now faster beyond imagination...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 79f3f50912571ec4c8f731ed45bbd612, type: 2}
   m_sharedMaterial: {fileID: 2186951346722961801, guid: 79f3f50912571ec4c8f731ed45bbd612, type: 2}

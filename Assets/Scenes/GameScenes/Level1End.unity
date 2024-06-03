@@ -248,7 +248,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You are now Faster
+  m_text: With the power of CO2, you are now slightly faster...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 79f3f50912571ec4c8f731ed45bbd612, type: 2}
   m_sharedMaterial: {fileID: 2186951346722961801, guid: 79f3f50912571ec4c8f731ed45bbd612, type: 2}
@@ -359,8 +359,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1234, y: -104}
-  m_SizeDelta: {x: 4851.8, y: 818.7}
+  m_AnchoredPosition: {x: 1411.1, y: -104}
+  m_SizeDelta: {x: 1927.5, y: 818.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &306447317
 MonoBehaviour:
@@ -382,7 +382,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TURBO
+  m_text: 'FIRE
+
+    EXTINGUISHER'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 79f3f50912571ec4c8f731ed45bbd612, type: 2}
   m_sharedMaterial: {fileID: 2186951346722961801, guid: 79f3f50912571ec4c8f731ed45bbd612, type: 2}
